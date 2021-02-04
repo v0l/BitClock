@@ -1,0 +1,9 @@
+#pragma once
+
+//Settings
+constexpr auto REFRESH_RATE = 60 * 1000;
+constexpr auto SSID = "MyWifiAP";
+constexpr auto PASSWORD = "password";
+constexpr auto NTP_SERVER = "time.google.com";
+constexpr auto NTP_UPDATE_INTERVAL = 60000;
+constexpr auto UTC_OFFSET = 0;
