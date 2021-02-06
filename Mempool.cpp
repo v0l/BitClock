@@ -20,6 +20,7 @@ auto Mempool::GetFees() -> RecommendedFees {
       };
     }
     client->stop();
+    delete client;
   }
   return {};
 }
@@ -31,6 +32,7 @@ auto Mempool::Update(Pannel *p, const unsigned long &time) -> bool {
   || rates.halfHour != lastFees.halfHour
   || rates.fastest != lastFees.fastest) {
     p->Clear();
+    p->DrawRect(false, Color::BLACK, 0, 0, p->rect.w, p->rect.h);
     DrawRate(rates.hour, p, 0);
     DrawRate(rates.halfHour, p, 1);
     DrawRate(rates.fastest, p, 2);
@@ -51,9 +53,9 @@ auto Mempool::DrawRate(int rate, Pannel *p, int slot) const -> bool {
   auto fontY = (p->rect.h - Font.Height) / 2;
   auto barY = (p->rect.h - h) / 2;
 
-  p->DrawRect(true, Color::BLACK, x + 5, barY + (h3 * 2), h3, h3);
-  p->DrawRect(slot > 0, Color::BLACK, x + 5 + h3, barY + h3, h3, h3 * 2);
-  p->DrawRect(slot > 1, Color::BLACK, x + 5 + (h3 * 2), barY, h3, h3 * 3);
+  p->DrawRect(true, Color::BLACK, x + 5, barY + (h3 * 2), h3 - 2, h3);
+  p->DrawRect(slot > 0, Color::BLACK, x + 5 + h3, barY + h3, h3 - 2, h3 * 2);
+  p->DrawRect(slot > 1, Color::BLACK, x + 5 + (h3 * 2), barY, h3 - 2, h3 * 3);
 
   char rateStr[25];
   sprintf(rateStr, "%d sat/vB", rate);

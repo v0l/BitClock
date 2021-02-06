@@ -24,6 +24,7 @@ auto Bisq::GetTicketPrice(const char* fiat) const -> float {
       return doc["last"].as<float>();
     }
     client->stop();
+    delete client;
   }
   return 0.0f;
 }
@@ -56,8 +57,6 @@ auto Bisq::GetPriceHistory(const char* fiat, const unsigned long &time) const ->
         }
     }
     sprintf(url, PriceHistoryUrl, fiat, int_str, tsFrom);
-    Serial.println(url);
-
     auto doc = JsonHelper::GetJsonDoc(client, url);
     if (!doc.isNull()) {
       for (auto x : doc.as<JsonArray>()) {
@@ -74,6 +73,7 @@ auto Bisq::GetPriceHistory(const char* fiat, const unsigned long &time) const ->
       }
     }
     client->stop();
+    delete client;
   }
 
   return ret;
@@ -139,7 +139,7 @@ auto Bisq::Update(Pannel *p, const unsigned long &time) -> bool {
 
             auto price = (*(graph.end() - 1)).avg;
             char msg[128];
-            sprintf(msg, "EUR %.0f", price);
+            sprintf(msg, "%.2f bits/EUR", 1e6 / price);
 
             p->Clear();
             p->DrawString(Padding, Padding, msg, &Font16, Color::BLACK);
