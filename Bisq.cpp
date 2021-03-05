@@ -3,8 +3,6 @@
 #include "Pannel.hpp"
 
 #include <fonts.h>
-#include <WiFiClientSecure.h>
-
 using namespace BitClock;
 
 Bisq::Bisq(const BisqDisplayMode &mode, const BisqGraphInterval &interval) : mode(mode), interval(interval) {
@@ -13,18 +11,14 @@ Bisq::Bisq(const BisqDisplayMode &mode, const BisqGraphInterval &interval) : mod
 
 auto Bisq::GetTicketPrice(const char* fiat) const -> float {
   constexpr auto PriceUrl = "https://bisq.markets/api/ticker?market=btc_%s";
-  auto client = new WiFiClientSecure();
-  if (client) {
-    char url[255];
-    sprintf(url, PriceUrl, fiat);
-    Serial.println(url);
 
-    auto doc = JsonHelper::GetJsonDoc(client, url);
-    if (!doc.isNull()) {
-      return doc["last"].as<float>();
-    }
-    client->stop();
-    delete client;
+  char url[255];
+  sprintf(url, PriceUrl, fiat);
+  Serial.println(url);
+
+  auto doc = JsonHelper::GetJsonDoc(url);
+  if (!doc.isNull()) {
+    return doc["last"].as<float>();
   }
   return 0.0f;
 }
@@ -36,44 +30,39 @@ auto Bisq::GetPriceHistory(const char* fiat, const unsigned long &time) const ->
   constexpr auto Hour = 60 * 60;
   constexpr auto Day = Hour * 24;
 
-  auto client = new WiFiClientSecure();
-  if (client) {
-    char url[255];
-    auto tsFrom = time - (Day * 30);
-    char *int_str = nullptr;
-    switch (interval) {
-      case BisqGraphInterval::Day: {
-          int_str = "day";
-          tsFrom -= tsFrom % Day;
-          break;
-        }
-      case BisqGraphInterval::Hour: {
-          int_str = "hour";
-          tsFrom -= tsFrom % Hour;
-          break;
-        }
-      default: {
-          int_str = "day";
-        }
-    }
-    sprintf(url, PriceHistoryUrl, fiat, int_str, tsFrom);
-    auto doc = JsonHelper::GetJsonDoc(client, url);
-    if (!doc.isNull()) {
-      for (auto x : doc.as<JsonArray>()) {
-        auto px = PriceHistory {
-          x["open"].as<float>(),
-          x["high"].as<float>(),
-          x["low"].as<float>(),
-          x["close"].as<float>(),
-          x["avg"].as<float>(),
-          x["period_start"].as<long>()
-        };
-
-        ret.push_back(px);
+  char url[255];
+  auto tsFrom = time - (Day * 30);
+  char *int_str = nullptr;
+  switch (interval) {
+    case BisqGraphInterval::Day: {
+        int_str = "day";
+        tsFrom -= tsFrom % Day;
+        break;
       }
+    case BisqGraphInterval::Hour: {
+        int_str = "hour";
+        tsFrom -= tsFrom % Hour;
+        break;
+      }
+    default: {
+        int_str = "day";
+      }
+  }
+  sprintf(url, PriceHistoryUrl, fiat, int_str, tsFrom);
+  auto doc = JsonHelper::GetJsonDoc(url);
+  if (!doc.isNull()) {
+    for (auto x : doc.as<JsonArray>()) {
+      auto px = PriceHistory {
+        x["open"].as<float>(),
+        x["high"].as<float>(),
+        x["low"].as<float>(),
+        x["close"].as<float>(),
+        x["avg"].as<float>(),
+        x["period_start"].as<long>()
+      };
+
+      ret.push_back(px);
     }
-    client->stop();
-    delete client;
   }
 
   return ret;

@@ -26,6 +26,8 @@ Add [ESP32](https://github.com/espressif/arduino-esp32) board to Boards Manager
 
 Download [Waveshare](https://github.com/waveshare/e-Paper) libs and copy `Arduino/EPD4in2` to `Arduino/libraries`
 
+Install `NTPClient` and `ArduinoJSON` in "Library Manager"
+
 ## Config
 
 Copy `Config.hpp.example` to `Config.hpp` and enter WiFi details and any other changes you like.

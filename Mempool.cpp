@@ -3,24 +3,18 @@
 #include "JsonHelper.hpp"
 
 #include <fonts.h>
-#include <WiFiClientSecure.h>
-
 using namespace BitClock;
 
 auto Mempool::GetFees() -> RecommendedFees {
   constexpr auto FeesUrl = "https://mempool.space/api/v1/fees/recommended";
-  auto client = new WiFiClientSecure();
-  if (client) {
-    auto doc = JsonHelper::GetJsonDoc(client, FeesUrl);
-    if (!doc.isNull()) {
-      return {
-        doc["fastestFee"].as<int>(),
-        doc["halfHourFee"].as<int>(),
-        doc["hourFee"].as<int>()
-      };
-    }
-    client->stop();
-    delete client;
+
+  auto doc = JsonHelper::GetJsonDoc(FeesUrl);
+  if (!doc.isNull()) {
+    return {
+      doc["fastestFee"].as<int>(),
+      doc["halfHourFee"].as<int>(),
+      doc["hourFee"].as<int>()
+    };
   }
   return {};
 }
