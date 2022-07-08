@@ -2,6 +2,8 @@
 
 E-Paper Bitcoin trading/stats display.
 
+![Demo](https://void.cat/d/235zHec5USoA9RWtyx9Uey)
+
 ## Setup
 
 ### Hardware
